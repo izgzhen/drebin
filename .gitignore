@@ -1,3 +1,7 @@
 *.pyc
 data/*
 *.log
+*apk
+*gooddir
+*maldir
+*.pkl

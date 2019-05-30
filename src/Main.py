@@ -24,18 +24,22 @@ def main(Args, FeatureOption):
         TestSize= Args.testsize
         Logger.debug("MalDir: {}, GoodDir: {}, NCpuCores: {}, TestSize: {}, FeatureOption: {}, NumFeatForExp: {}"
                      .format(MalDir, GoodDir, NCpuCores, TestSize, FeatureOption, NumFeatForExp))
-        GetApkData(NCpuCores, MalDir, GoodDir)
+        if Args.gendata:
+            GetApkData(NCpuCores, MalDir, GoodDir)
         RandomClassification(MalDir, GoodDir, TestSize, FeatureOption, Model, NumFeatForExp)
     else:
         TestMalDir= Args.testmaldir
         TestGoodDir= Args.testgooddir
         Logger.debug("MalDir: {}, GoodDir: {}, TestMalDir: {}, TestGoodDir: {} NCpuCores: {}, FeatureOption: {}, NumFeatForExp: {}"
                      .format(MalDir, GoodDir, TestMalDir, TestGoodDir, NCpuCores,  FeatureOption, NumFeatForExp))
-        GetApkData(NCpuCores, MalDir, GoodDir, TestMalDir, TestGoodDir)
+        if Args.gendata:
+            GetApkData(NCpuCores, MalDir, GoodDir, TestMalDir, TestGoodDir)
         HoldoutClassification(MalDir, GoodDir, TestMalDir, TestGoodDir, FeatureOption, Model, NumFeatForExp)
 
 def ParseArgs():
     Args =  argparse.ArgumentParser(description="Classification of Android Applications")
+    Args.add_argument("--gendata", type=int, default= 1,
+                      help="Generate data")
     Args.add_argument("--holdout", type= int, default= 0,
                       help="Type of Classification to be performed (0 for Random Classification and 1 for Holdout Classification")
     Args.add_argument("--maldir", default= "../data/small_proto_apks/malware",

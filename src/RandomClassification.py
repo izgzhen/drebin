@@ -1,6 +1,7 @@
 import numpy as np
+import pandas as pd
 import time
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer as TF
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import LinearSVC
@@ -76,7 +77,7 @@ def RandomClassification(MalwareCorpus, GoodwareCorpus, TestSize, FeatureOption,
         dump(Clf, filename + ".pkl")
     else:
         SVMModels = load(Model)
-        BestModel= SVMModels.best_estimator
+        BestModel= SVMModels.best_estimator_
 
     # step 4: Evaluate the best model on test set
     T0 = time.time()
@@ -87,11 +88,20 @@ def RandomClassification(MalwareCorpus, GoodwareCorpus, TestSize, FeatureOption,
     print(metrics.classification_report(y_test,
                                        y_pred, labels=[1, -1],
                                         target_names=['Malware', 'Goodware']))
+    from sklearn.metrics import confusion_matrix
     Report = "Test Set Accuracy = " + str(Accuracy) + "\n" + metrics.classification_report(y_test,
                                                                                            y_pred,
                                                                                            labels=[1, -1],
                                                                                            target_names=['Malware',
                                                                                                          'Goodware'])
+    confusion_mat = confusion_matrix(y_test, y_pred, labels=[1,-1])
+    FP = confusion_mat.sum(axis=0) - np.diag(confusion_mat)
+    FN = confusion_mat.sum(axis=1) - np.diag(confusion_mat)
+    TP = np.diag(confusion_mat)
+    TN = confusion_mat.sum() - (FP + FN + TP)
+    FP_FN_TP_TN = pd.DataFrame([FP, FN, TP, TN], columns=["Malware", "Goodware"], index=["FP", "FN","TP", "TN"])
+    print(FP_FN_TP_TN.to_csv())
+
     # pointwise multiplication between weight and feature vect
     w = BestModel.coef_
     w = w[0].tolist()
