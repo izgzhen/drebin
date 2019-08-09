@@ -6,7 +6,7 @@ import psutil, argparse, logging
 logging.basicConfig(level=logging.INFO)
 Logger = logging.getLogger('main.stdout')
 
-def main(Args, FeatureOption):
+def main(Args):
     '''
     Main function for malware and goodware classification
     :param args: arguments acquired from command lines(refer to ParseArgs() for list of args)
@@ -23,18 +23,18 @@ def main(Args, FeatureOption):
         #Perform Random Classification
         TestSize= Args.testsize
         Logger.debug("MalDir: {}, GoodDir: {}, NCpuCores: {}, TestSize: {}, FeatureOption: {}, NumFeatForExp: {}"
-                     .format(MalDir, GoodDir, NCpuCores, TestSize, FeatureOption, NumFeatForExp))
+                     .format(MalDir, GoodDir, NCpuCores, TestSize, True, NumFeatForExp))
         if Args.gendata:
             GetApkData(NCpuCores, MalDir, GoodDir)
-        RandomClassification(MalDir, GoodDir, TestSize, FeatureOption, Model, NumFeatForExp)
+        RandomClassification(MalDir, GoodDir, TestSize, True, Model, NumFeatForExp)
     else:
         TestMalDir= Args.testmaldir
         TestGoodDir= Args.testgooddir
-        Logger.debug("MalDir: {}, GoodDir: {}, TestMalDir: {}, TestGoodDir: {} NCpuCores: {}, FeatureOption: {}, NumFeatForExp: {}"
-                     .format(MalDir, GoodDir, TestMalDir, TestGoodDir, NCpuCores,  FeatureOption, NumFeatForExp))
+        Logger.debug("MalDir: {}, GoodDir: {}, TestMalDir: {}, TestGoodDir: {} NCpuCores: {}, True: {}, NumFeatForExp: {}"
+                     .format(MalDir, GoodDir, TestMalDir, TestGoodDir, NCpuCores,  True, NumFeatForExp))
         if Args.gendata:
             GetApkData(NCpuCores, MalDir, GoodDir, TestMalDir, TestGoodDir)
-        HoldoutClassification(MalDir, GoodDir, TestMalDir, TestGoodDir, FeatureOption, Model, NumFeatForExp)
+        HoldoutClassification(MalDir, GoodDir, TestMalDir, TestGoodDir, True, Model, NumFeatForExp)
 
 def ParseArgs():
     Args =  argparse.ArgumentParser(description="Classification of Android Applications")
@@ -61,4 +61,4 @@ def ParseArgs():
     return Args.parse_args()
 
 if __name__ == "__main__":
-    main(ParseArgs(), True)
+    main(ParseArgs())
