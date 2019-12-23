@@ -6,6 +6,9 @@ from msbase.utils import load_json
 source_root_dir = sys.argv[1]
 drebin_outputs_dir = sys.argv[2]
 
+# Drebin will fail on those
+blacklist = set(open("blacklist.txt", "r").read().strip().split("\n"))
+
 metadata = None
 if len(sys.argv) > 3:
     if sys.argv[3].endswith("*.json"):
@@ -31,4 +34,6 @@ for dirname, apks in [("maldir", mal_apks), ("gooddir", benign_apks)]:
         if apk_name in existing_drebin_outputs:
             print("Skip existing " + apk_name)
             continue
-        os.symlink(os.path.realpath(apk), dirname + "/" + apk_name)
+        dest = dirname + "/" + apk_name
+        if dest not in blacklist:
+            os.symlink(os.path.realpath(apk), dest)
