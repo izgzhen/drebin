@@ -11,7 +11,7 @@ blacklist = set(open("blacklist.txt", "r").read().strip().split("\n"))
 
 metadata = None
 if len(sys.argv) > 3:
-    if sys.argv[3].endswith("*.json"):
+    if sys.argv[3].endswith(".json"):
         metadata = load_json(sys.argv[3])
     elif os.path.isdir(sys.argv[3]):
         metadata = [ s for m in glob.glob(sys.argv[3] + "/**/*.json", recursive=True) for s in load_json(m) ]
@@ -22,8 +22,9 @@ for dirname in ["maldir", "gooddir"]:
 existing_drebin_outputs = [os.path.basename(f).replace(".data", ".apk") for f in glob.glob(drebin_outputs_dir + "/*.data") ]
 
 if metadata is not None:
-    benign_apks = [ source_root_dir + "/" + sample["apk"] for sample in metadata if sample["label"] == "benign" ]
-    mal_apks = [ source_root_dir + "/" + sample["apk"] for sample in metadata if sample["label"] != "benign" ]
+    benign_apks = set([ source_root_dir + "/" + sample["apk"] for sample in metadata if sample["label"] is None or sample["label"] == "benign" ])
+    # mal_apks = [ source_root_dir + "/" + sample["apk"] for sample in metadata if sample["label"] != "benign" ]
+    mal_apks = []
 else:
     benign_apks = []
     mal_apks = glob.glob(source_root_dir + "/*.apk")
